@@ -1,4 +1,4 @@
-<!doctype html>
+<<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -67,88 +67,28 @@
     }
 
     .chaos-glitch{ font-weight:900 } /* hook for Chaos Mode */
+
+    /* Floating mobile controls */
+    .cm-fab{
+      position:fixed;
+      right:12px;
+      bottom:calc(12px + env(safe-area-inset-bottom));
+      z-index:2147483647;
+      display:flex; gap:10px;
+    }
+    .cm-btn{
+      padding:10px 12px; border:1px solid #000; background:#fff; color:#000;
+      font:13px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      box-shadow:3px 3px 0 #000; border-radius:8px;
+    }
   </style>
 </head>
-<!-- Mobile controls for Chaos Mode (fixed) -->
-<style>
-  .cm-fab{
-    position:fixed;
-    right:12px;
-    bottom:calc(12px + env(safe-area-inset-bottom));
-    z-index:2147483647; /* above everything */
-    display:flex; gap:10px;
-  }
-  .cm-btn{
-    padding:10px 12px; border:1px solid #000; background:#fff; color:#000;
-    font:13px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-    box-shadow:3px 3px 0 #000; border-radius:8px;
-  }
-</style>
-<div class="cm-fab" aria-label="Chaos controls">
-  <button id="cm-open" class="cm-btn">Open Panel</button>
-  <button id="cm-all"  class="cm-btn">Toggle All</button>
-</div>
-
-<script>
-(function(){
-  function ensurePanel(){
-    // Mount Chaos if not present yet
-    if (!document.querySelector('[data-chaos-ui]') && window.Chaos?.enable){
-      window.Chaos.enable();
-    }
-    const panel = document.querySelector('[data-chaos-ui]');
-    if (panel) panel.style.display = ''; // make sure it's visible
-    return panel;
-  }
-
-  // Run now (covers Safari cases where DOMContentLoaded has already fired)
-  const openBtn = document.getElementById('cm-open');
-  const allBtn  = document.getElementById('cm-all');
-
-  openBtn.addEventListener('click', () => {
-    ensurePanel();
-  });
-
-  allBtn.addEventListener('click', () => {
-    const panel = ensurePanel();
-    // IMPORTANT: button is inside the panel, so query as a descendant
-    panel?.querySelector('[data-act="all"]')?.click();
-  });
-})();
-</script>
-  // Ensure Chaos Mode is mounted
-  window.addEventListener('DOMContentLoaded', () => {
-    // If script hasn't auto-mounted yet, mount it
-    if (!document.querySelector('[data-chaos-ui]') && window.Chaos?.enable) {
-      window.Chaos.enable();
-    }
-
-    const ensurePanel = () => {
-      // Create/show the panel if needed
-      if (!document.querySelector('[data-chaos-ui]') && window.Chaos?.enable) {
-        window.Chaos.enable();
-      }
-      const panel = document.querySelector('[data-chaos-ui]');
-      if (panel) panel.style.display = '';
-      return panel;
-    };
-
-    document.getElementById('cm-open').addEventListener('click', () => {
-      ensurePanel(); // just show it
-    });
-
-    document.getElementById('cm-all').addEventListener('click', () => {
-      const panel = ensurePanel();
-      panel?.querySelector('[data-act="all"]')?.click(); // same as keyboard "Toggle All"
-    });
-  });
-</script>
 <body>
   <main class="stage">
     <section class="screen scan" aria-label="CRT Surface">
       <header class="hero">
         <h1 class="chaos-glitch" data-text="CHAOS MODE DEMO">CHAOS MODE DEMO</h1>
-        <p>Mobile-first CRT page. Open the chaos panel with <code>Ctrl+Alt+C</code> (or any keyboard). Toggle modules and watch it bend.</p>
+        <p>Mobile-first CRT page. Use the buttons to open the Chaos panel and toggle everything.</p>
       </header>
 
       <section class="grid" aria-label="Program Blocks">
@@ -199,15 +139,34 @@
     </section>
   </main>
 
-  <!-- Load Chaos Mode (compact build) -->
+  <!-- Floating mobile buttons -->
+  <div class="cm-fab" aria-label="Chaos controls">
+    <button id="cm-open" class="cm-btn">Open Panel</button>
+    <button id="cm-all"  class="cm-btn">Toggle All</button>
+  </div>
+
+  <!-- Chaos Mode script -->
   <script src="/chaos-mode.js"></script>
+
+  <!-- Mobile control logic (keep inside <script>, no stray markup) -->
+  <script>
+    (function(){
+      function ensurePanel(){
+        if (!document.querySelector('[data-chaos-ui]') && window.Chaos?.enable){
+          window.Chaos.enable();
+        }
+        const panel = document.querySelector('[data-chaos-ui]');
+        if (panel) panel.style.display = '';
+        return panel;
+      }
+      document.getElementById('cm-open').addEventListener('click', () => {
+        ensurePanel();
+      });
+      document.getElementById('cm-all').addEventListener('click', () => {
+        const panel = ensurePanel();
+        panel?.querySelector('[data-act="all"]')?.click();
+      });
+    })();
+  </script>
 </body>
 </html>
-<script>
-  // Auto-enable a few modules on load
-  window.addEventListener('DOMContentLoaded', () => {
-    // simulate clicking "Toggle All"
-    document.querySelector('[data-chaos-ui][data-act="all"]')?.click();
-  });
-</script>
-
