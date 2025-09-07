@@ -129,3 +129,11 @@
   <script src="/chaos-mode.js"></script>
 </body>
 </html>
+<script>
+  // Auto-enable a few modules on load
+  window.addEventListener('DOMContentLoaded', () => {
+    // simulate clicking "Toggle All"
+    document.querySelector('[data-chaos-ui][data-act="all"]')?.click();
+  });
+</script>
+
