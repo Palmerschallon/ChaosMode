@@ -69,6 +69,47 @@
     .chaos-glitch{ font-weight:900 } /* hook for Chaos Mode */
   </style>
 </head>
+  <!-- Mobile controls for Chaos Mode -->
+<style>
+  .cm-fab { position:fixed; left:12px; bottom:12px; z-index:2147483647;
+    display:flex; gap:10px; }
+  .cm-btn { padding:10px 12px; border:1px solid #000; background:#fff; color:#000;
+    font:13px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; box-shadow:3px 3px 0 #000;
+    border-radius:8px; }
+</style>
+<div class="cm-fab" aria-label="Chaos controls">
+  <button id="cm-open" class="cm-btn">Open Panel</button>
+  <button id="cm-all"  class="cm-btn">Toggle All</button>
+</div>
+
+<script>
+  // Ensure Chaos Mode is mounted
+  window.addEventListener('DOMContentLoaded', () => {
+    // If script hasn't auto-mounted yet, mount it
+    if (!document.querySelector('[data-chaos-ui]') && window.Chaos?.enable) {
+      window.Chaos.enable();
+    }
+
+    const ensurePanel = () => {
+      // Create/show the panel if needed
+      if (!document.querySelector('[data-chaos-ui]') && window.Chaos?.enable) {
+        window.Chaos.enable();
+      }
+      const panel = document.querySelector('[data-chaos-ui]');
+      if (panel) panel.style.display = '';
+      return panel;
+    };
+
+    document.getElementById('cm-open').addEventListener('click', () => {
+      ensurePanel(); // just show it
+    });
+
+    document.getElementById('cm-all').addEventListener('click', () => {
+      const panel = ensurePanel();
+      panel?.querySelector('[data-act="all"]')?.click(); // same as keyboard "Toggle All"
+    });
+  });
+</script>
 <body>
   <main class="stage">
     <section class="screen scan" aria-label="CRT Surface">
