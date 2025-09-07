@@ -69,13 +69,20 @@
     .chaos-glitch{ font-weight:900 } /* hook for Chaos Mode */
   </style>
 </head>
-  <!-- Mobile controls for Chaos Mode -->
+<!-- Mobile controls for Chaos Mode (fixed) -->
 <style>
-  .cm-fab { position:fixed; left:12px; bottom:12px; z-index:2147483647;
-    display:flex; gap:10px; }
-  .cm-btn { padding:10px 12px; border:1px solid #000; background:#fff; color:#000;
-    font:13px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; box-shadow:3px 3px 0 #000;
-    border-radius:8px; }
+  .cm-fab{
+    position:fixed;
+    right:12px;
+    bottom:calc(12px + env(safe-area-inset-bottom));
+    z-index:2147483647; /* above everything */
+    display:flex; gap:10px;
+  }
+  .cm-btn{
+    padding:10px 12px; border:1px solid #000; background:#fff; color:#000;
+    font:13px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    box-shadow:3px 3px 0 #000; border-radius:8px;
+  }
 </style>
 <div class="cm-fab" aria-label="Chaos controls">
   <button id="cm-open" class="cm-btn">Open Panel</button>
@@ -83,6 +90,32 @@
 </div>
 
 <script>
+(function(){
+  function ensurePanel(){
+    // Mount Chaos if not present yet
+    if (!document.querySelector('[data-chaos-ui]') && window.Chaos?.enable){
+      window.Chaos.enable();
+    }
+    const panel = document.querySelector('[data-chaos-ui]');
+    if (panel) panel.style.display = ''; // make sure it's visible
+    return panel;
+  }
+
+  // Run now (covers Safari cases where DOMContentLoaded has already fired)
+  const openBtn = document.getElementById('cm-open');
+  const allBtn  = document.getElementById('cm-all');
+
+  openBtn.addEventListener('click', () => {
+    ensurePanel();
+  });
+
+  allBtn.addEventListener('click', () => {
+    const panel = ensurePanel();
+    // IMPORTANT: button is inside the panel, so query as a descendant
+    panel?.querySelector('[data-act="all"]')?.click();
+  });
+})();
+</script>
   // Ensure Chaos Mode is mounted
   window.addEventListener('DOMContentLoaded', () => {
     // If script hasn't auto-mounted yet, mount it
