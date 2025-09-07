@@ -2,82 +2,47 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Chaos Mode — CRT Demo (Mobile-First)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0a0a0a">
+  <title>Chaos Mode — Mobile CRT Demo</title>
+  <meta name="theme-color" content="#0a0a0a" />
   <style>
-    :root{
-      --bg:#0a0a0a; --ink:#e6e6e6; --red:#e53935; --panel:#111; --edge:#1f1f1f;
-    }
-    /* Base / mobile-first */
+    :root{ --bg:#0a0a0a; --ink:#e6e6e6; --edge:#1f1f1f; --red:#e53935; }
     html,body{height:100%}
     body{
       margin:0;
       background:#000 radial-gradient(160% 100% at 50% 0%, #171717 0%, var(--bg) 60%, #000 100%) no-repeat;
       color:var(--ink);
       font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+      -webkit-font-smoothing:antialiased;
     }
-    a{color:inherit; text-decoration:none; border-bottom:1px solid #777}
-    a:active{opacity:.8}
-
-    /* Stage (phone-safe paddings and rounded edges) */
-    .stage{
-      max-width: 960px;
-      margin: clamp(12px, 4vh, 28px) auto;
-      padding: clamp(10px, 2.5vw, 20px);
-    }
+    .stage{max-width:960px;margin:clamp(12px,4vh,28px) auto;padding:clamp(10px,2.5vw,20px);}
     .screen{
-      position:relative;
-      padding: clamp(12px, 3vw, 24px);
-      background:#0b0b0b;
-      border-radius: 16px;
-      box-shadow:
-        inset 0 0 60px rgba(255,255,255,.03),
-        inset 0 -30px 80px rgba(0,0,0,.6),
-        0 18px 60px rgba(0,0,0,.65);
-      overflow:hidden;
+      position:relative; overflow:hidden; border-radius:16px; padding:clamp(12px,3vw,24px);
+      background:#0b0b0b; box-shadow:inset 0 0 60px rgba(255,255,255,.03), inset 0 -30px 80px rgba(0,0,0,.6), 0 18px 60px rgba(0,0,0,.65);
     }
-    /* Subtle glass highlight on mobile (cheaper than heavy filters) */
     .screen::before{
-      content:"";
-      position:absolute; inset:-2%;
-      border-radius:18px;
-      background:
-        radial-gradient(120% 60% at 50% 0%, rgba(255,255,255,.10), transparent 60%),
-        radial-gradient(70% 100% at 50% 120%, rgba(255,255,255,.02), transparent 60%);
-      pointer-events:none; mix-blend-mode:screen;
+      content:""; position:absolute; inset:-2%; border-radius:18px; pointer-events:none; mix-blend-mode:screen;
+      background:radial-gradient(120% 60% at 50% 0%, rgba(255,255,255,.10), transparent 60%), radial-gradient(70% 100% at 50% 120%, rgba(255,255,255,.02), transparent 60%);
     }
-
-    /* Scanlines – toned down on mobile for perf */
     .scan::after{
-      content:""; position:absolute; inset:0; pointer-events:none;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.015) 0 1px,
-        rgba(0,0,0,0.05) 1px 2px
-      );
-      opacity:.85; mix-blend-mode:soft-light;
+      content:""; position:absolute; inset:0; pointer-events:none; opacity:.85; mix-blend-mode:soft-light;
+      background:repeating-linear-gradient(to bottom, rgba(255,255,255,.015) 0 1px, rgba(0,0,0,.05) 1px 2px);
       animation:slidedown .9s linear infinite;
     }
-    @keyframes slidedown { 50% { transform: translateY(1px); } }
+    @keyframes slidedown { 50% { transform: translateY(1px);} }
 
     .hero h1{
-      margin:0 0 .4rem; line-height:.95;
-      font-weight:900;
-      font-size: clamp(1.8rem, 9vw, 3.2rem);
-      letter-spacing:.02em;
+      margin:0 0 .4rem; line-height:.95; font-weight:900;
+      font-size:clamp(1.9rem,9vw,3.2rem); letter-spacing:.02em;
       text-shadow:-1px 0 0 rgba(255,0,0,.22), 1px 0 0 rgba(0,200,255,.22);
     }
     .hero p{ margin:0; color:#c9c9c9 }
 
-    /* Blocks: mobile single column */
     .grid{ display:grid; gap:12px; margin-top:16px; }
     .block{
-      background: linear-gradient(180deg, #121212, #0f0f0f);
-      border:1px solid var(--edge); border-radius:10px;
-      padding:12px; min-height:96px;
-      box-shadow: 0 0 0 1px rgba(255,255,255,.02) inset;
+      background:linear-gradient(180deg,#121212,#0f0f0f);
+      border:1px solid var(--edge); border-radius:10px; padding:12px; min-height:96px;
+      box-shadow:0 0 0 1px rgba(255,255,255,.02) inset;
     }
     .tag{ font-size:.72rem; color:#a0a0a0; text-transform:uppercase; letter-spacing:.12em }
     .h{ font-weight:700; margin:.25rem 0 .3rem }
@@ -86,58 +51,37 @@
     .test{
       display:flex; align-items:center; justify-content:center;
       min-height:140px; border:1px dashed #2a2a2a; background:#0e0e0e;
-      border-radius:10px; text-align:center;
-      padding:18px;
+      border-radius:10px; text-align:center; padding:18px;
     }
-    .ticker{
-      margin-top:14px; height:34px; border-top:1px solid #1b1b1b; border-bottom:1px solid #1b1b1b;
-      overflow:hidden; background:#0a0a0a; display:flex; align-items:center;
-    }
-    .crawl{
-      position:relative; white-space:nowrap; will-change:transform;
-      animation:crawl 22s linear infinite;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      color:#b0b0b0; padding-left:8px;
-    }
+    .ticker{ margin-top:14px; height:34px; border-top:1px solid #1b1b1b; border-bottom:1px solid #1b1b1b; overflow:hidden; background:#0a0a0a; display:flex; align-items:center; }
+    .crawl{ position:relative; white-space:nowrap; will-change:transform; animation:crawl 22s linear infinite; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; color:#b0b0b0; padding-left:8px; }
     .crawl b{ color:var(--red) }
     @keyframes crawl { from{ transform:translateX(100%) } to{ transform:translateX(-100%) } }
 
-    /* Bezel controls – big enough for thumbs */
-    .bezel{ display:flex; gap:10px; align-items:center; justify-content:flex-end; margin-top:10px; color:#888 }
-    .dot{ width:12px;height:12px;border-radius:50%; background:#1a1a1a; box-shadow: inset 0 0 4px #000, 0 0 8px rgba(229,57,53,.2)}
-    .dial{ width:54px;height:16px;background:#1a1a1a;border:1px solid #000; box-shadow: inset 0 0 6px rgba(255,255,255,.05)}
-    .dial:before{ content:""; display:block; width:22px;height:100%; background:#2b2b2b}
-
-    /* Progressive enhancement: switch to multi-column at >= 768px */
     @media (min-width:768px){
       body{ font-size:16px }
-      .grid{
-        grid-template-columns: repeat(12, 1fr);
-        gap:16px;
-      }
-      .b1{ grid-column: span 7 }
-      .b2{ grid-column: span 5 }
-      .b3,.b4,.b5,.b6{ grid-column: span 3; min-height:140px }
-      .test{ grid-column: span 12; min-height:220px }
+      .grid{ grid-template-columns:repeat(12,1fr); gap:16px; }
+      .b1{ grid-column:span 7 } .b2{ grid-column:span 5 }
+      .b3,.b4,.b5,.b6{ grid-column:span 3; min-height:140px }
+      .test{ grid-column:span 12; min-height:220px }
     }
 
-    /* Hook for Chaos Mode’s glitch text */
-    .chaos-glitch{ font-weight:900 }
+    .chaos-glitch{ font-weight:900 } /* hook for Chaos Mode */
   </style>
 </head>
 <body>
   <main class="stage">
     <section class="screen scan" aria-label="CRT Surface">
       <header class="hero">
-        <h1 class="chaos-glitch" data-text="THE LAST CHANNEL">THE LAST CHANNEL</h1>
-        <p>Mobile-first demo for <strong>Chaos Mode</strong>. Open the chaos panel with <code>Ctrl+Alt+C</code> (or attach a Bluetooth keyboard). Toggles live. Failure on tap.</p>
+        <h1 class="chaos-glitch" data-text="CHAOS MODE DEMO">CHAOS MODE DEMO</h1>
+        <p>Mobile-first CRT page. Open the chaos panel with <code>Ctrl+Alt+C</code> (or any keyboard). Toggle modules and watch it bend.</p>
       </header>
 
       <section class="grid" aria-label="Program Blocks">
         <article class="block b1">
           <div class="tag">signal a</div>
           <div class="h">Forbidden Glimpse</div>
-          <p class="copy">Transmission cuts in from somewhere it shouldn’t exist. Picture leans, audio desyncs, frame breathes.</p>
+          <p class="copy">The picture leans, audio desyncs, frame breathes. Good—stress the seams.</p>
         </article>
 
         <article class="block b2">
@@ -176,17 +120,12 @@
       </section>
 
       <div class="ticker" aria-hidden="true">
-        <div class="crawl">▲ SYSTEM NOTICE: <b>CHAOS MODE</b> ENABLED • TOGGLE: LAYOUT MAYHEM · MUTATION STORM · GLITCH OVERLAY · LATENCY · TYPOGRAPHY STRESS • FAILURE IS A FEATURE •</div>
+        <div class="crawl">▲ SYSTEM NOTICE: <b>CHAOS MODE</b> ENABLED • TOGGLE: LAYOUT MAYHEM · MUTATION STORM · LATENCY LAG · GLITCH OVERLAY • FAILURE IS A FEATURE •</div>
       </div>
-
-      <footer class="bezel" aria-label="Controls">
-        <div class="dot"></div><div class="dot" style="background:#231f20"></div>
-        <div class="dial"></div><div class="dial"></div>
-      </footer>
     </section>
   </main>
 
-  <!-- Load Chaos Mode -->
-  <script src="chaos-mode.js"></script>
+  <!-- Load Chaos Mode (compact build) -->
+  <script src="/chaos-mode.js"></script>
 </body>
 </html>
