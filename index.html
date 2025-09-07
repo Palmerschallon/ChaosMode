@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Chaos Mode — CRT Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --bg:#0c0c0c;
+      --ink:#e6e6e6;
+      --red:#e53935;
+      --grid:#1b1b1b;
+      --glass:#101010;
+      --accent:#9e9e9e;
+    }
+    /* Page baseline */
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: radial-gradient(120% 140% at 50% 10%, #151515 0%, var(--bg) 55%, #000 100%);
+      color:var(--ink);
+      font: 16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      letter-spacing:.01em;
+    }
+    a{color:var(--ink); text-decoration: none; border-bottom:1px solid var(--accent)}
+    a:hover{color:#fff; border-bottom-color:#fff}
+
+    /* ----- CRT TV frame ----- */
+    .stage{
+      max-width: 1040px;
+      margin: 4rem auto;
+      padding: 2rem;
+      background:
+        radial-gradient(120% 180% at 50% 0%, rgba(255,255,255,.05), rgba(255,255,255,0) 40%),
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0));
+      border-radius: 24px;
+      box-shadow:
+        inset 0 0 60px rgba(255,255,255,.03),
+        inset 0 0 120px rgba(229,57,53,.05),
+        0 30px 90px rgba(0,0,0,.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Curved glass / barrel distortion illusion */
+    .screen{
+      position: relative;
+      padding: 2.25rem 2rem 2rem;
+      background: #0a0a0a;
+      border-radius: 18px;
+      box-shadow:
+        inset 0 -40px 120px rgba(0,0,0,.6),
+        inset 0 20px 60px rgba(255,255,255,.05),
+        0 0 0 8px #050505;
+      transform: perspective(1200px) translateZ(0);
+    }
+    .screen::before{
+      /* vignette + curvature highlight */
+      content:"";
+      position:absolute; inset:-2%;
+      background:
+        radial-gradient(120% 60% at 50% 0%, rgba(255,255,255,.12), transparent 60%),
+        radial-gradient(60% 100% at 50% 120%, rgba(255,255,255,.03), transparent 60%),
+        radial-gradient(120% 120% at 50% 50%, transparent 55%, rgba(0,0,0,.35) 90%);
+      border-radius: 22px;
+      pointer-events:none;
+      mix-blend-mode: screen;
+    }
+
+    /* Scanlines */
+    .scanlines::after{
+      content:"";
+      position:absolute; inset:0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.02) 0px,
+        rgba(255,255,255,0.02) 1px,
+        rgba(0,0,0,0.05) 2px,
+        rgba(0,0,0,0.05) 3px
+      );
+      opacity:.9;
+      pointer-events:none;
+      mix-blend-mode: soft-light;
+      animation: drift .8s linear infinite;
+    }
+    @keyframes drift { 50% { transform: translateY(1px); } }
+
+    /* Slight chromatic bleed on bright text */
+    .rgb{
+      position:relative;
+      text-shadow:
+        -1px 0 0 rgba(255,0,0,.25),
+         1px 0 0 rgba(0,200,255,.25);
+      filter: saturate(1.05) contrast(1.05);
+    }
+
+    /* Title / hero */
+    .hero h1{
+      font-weight: 800;
+      font-size: clamp(2.2rem, 7vw, 4.5rem);
+      line-height: .9;
+      margin: 0 0 .6rem;
+      letter-spacing: .02em;
+    }
+    .hero p{ max-width: 60ch; color:#c9c9c9; margin:0 }
+
+    /* Grid of “program blocks” to give Chaos Mode joints to break */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      margin-top: 2rem;
+    }
+    .block{
+      background: linear-gradient(180deg, #121212, #0f0f0f);
+      border:1px solid #1e1e1e;
+      padding: 16px;
+      min-height: 120px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.02) inset;
+    }
+    .b1{ grid-column: span 7; }
+    .b2{ grid-column: span 5; }
+    .b3,.b4,.b5,.b6{ grid-column: span 3; }
+    .b7{ grid-column: span 12; min-height: 220px; display:flex; align-items:center; justify-content:center; border:1px dashed #2a2a2a; }
+
+    .tag{ font-size:.75rem; color:#9b9b9b; text-transform:uppercase; letter-spacing:.12em; }
+    .h{ font-weight:700; margin:.25rem 0 .35rem; }
+    .copy{ color:#bdbdbd; font-size:.95rem; }
+
+    /* Faux controls bezel */
+    .bezel{
+      display:flex; gap:12px; align-items:center; justify-content:flex-end;
+      margin-top: 10px; color:#888;
+    }
+    .dot{ width:10px;height:10px;border-radius:50%; background:#1a1a1a; box-shadow: inset 0 0 4px #000, 0 0 8px rgba(229,57,53,.2)}
+    .dial{ width:44px;height:14px;background:#1a1a1a;border:1px solid #000; box-shadow: inset 0 0 6px rgba(255,255,255,.05)}
+    .dial:before{ content:""; display:block; width:18px;height:100%; background:#2b2b2b}
+
+    /* Marquee crawl */
+    .ticker{
+      margin-top: 20px;
+      border-top:1px solid #1d1d1d; border-bottom:1px solid #1d1d1d;
+      background: #0b0b0b;
+      overflow:hidden; position:relative;
+      height: 36px; display:flex; align-items:center;
+    }
+    .crawl{
+      white-space:nowrap; position:absolute; will-change:transform;
+      animation: crawl 22s linear infinite;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color:#b0b0b0;
+    }
+    .crawl b{ color:var(--red)}
+    @keyframes crawl { from{ transform: translateX(100%)} to{ transform: translateX(-100%)} }
+
+    /* Utility to hint the glitch headline from Chaos Mode */
+    .chaos-glitch { font-weight: 900; }
+
+    /* Make it easy for Chaos Mode to “hurt” the layout */
+    @media (min-width: 900px){
+      .b3,.b4,.b5,.b6{ min-height: 160px }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="screen scanlines">
+      <header class="hero">
+        <h1 class="chaos-glitch rgb" data-text="THE LAST CHANNEL">THE LAST CHANNEL</h1>
+        <p class="rgb">Retro-broadcast demo page for <strong>Chaos Mode</strong>. Press <code>Ctrl+Alt+C</code> to open the chaos panel. Flip switches. Watch the system fail with style.</p>
+      </header>
+
+      <section class="grid" aria-label="Program Blocks">
+        <article class="block b1">
+          <div class="tag">signal a</div>
+          <div class="h">Forbidden Glimpse</div>
+          <p class="copy">Transmission cuts in from somewhere it shouldn’t exist. The picture leans, audio desyncs, the frame breathes.</p>
+        </article>
+
+        <article class="block b2">
+          <div class="tag">signal b</div>
+          <div class="h">Maintenance Interruption</div>
+          <p class="copy">Please stand by. Nothing is wrong. Nothing is ever wrong.</p>
+        </article>
+
+        <article class="block b3">
+          <div class="tag">ad break</div>
+          <div class="h">Commodity Dream</div>
+          <p class="copy">It sells you back your own attention. Limited time only.</p>
+        </article>
+
+        <article class="block b4">
+          <div class="tag">promo</div>
+          <div class="h">Tonight at 03:32</div>
+          <p class="copy">The crawl says this is fine.</p>
+        </article>
+
+        <article class="block b5">
+          <div class="tag">weather</div>
+          <div class="h">Static with Chance of Snow</div>
+          <p class="copy">Forecast: intermittent artifacts and gentle drift.</p>
+        </article>
+
+        <article class="block b6">
+          <div class="tag">id</div>
+          <div class="h">WLST — 32 MHz</div>
+          <p class="copy">Licensed to nowhere. Broadcasting to you.</p>
+        </article>
+
+        <aside class="block b7 rgb" aria-label="Test Pattern">
+          <div class="chaos-glitch" data-text="PLEASE STAND BY">PLEASE STAND BY</div>
+        </aside>
+      </section>
+
+      <div class="ticker" aria-hidden="true">
+        <div class="crawl">▲ SYSTEM NOTICE: <b>CHAOS MODE</b> ENABLED • PRESS <b>CTRL+ALT+C</b> TO OPEN PANEL • TOGGLE: LAYOUT MAYHEM · MUTATION STORM · GLITCH OVERLAY · LATENCY · TYPOGRAPHY STRESS • FAILURE IS A FEATURE •</div>
+      </div>
+
+      <footer class="bezel" aria-label="Controls">
+        <div class="dot"></div><div class="dot" style="background:#231f20"></div>
+        <div class="dial"></div><div class="dial"></div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Load Chaos Mode -->
+  <script src="chaos-mode.js"></script>
+</body>
+</html>
